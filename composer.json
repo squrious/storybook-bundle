@@ -1,0 +1,28 @@
+{
+    "name": "nicrig/storybook",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Rigaud",
+            "email": "nicolas.rigaud@sensiolabs.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Storybook\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Storybook\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": "^6.3",
+        "symfony/twig-bundle": "^6.3"
+    }
+}
