@@ -19,7 +19,7 @@ class CorsListener
 
         $route = $this->requestStack->getMainRequest()->attributes->get('_route');
 
-        if ('storybook_render' !== $route) {
+        if (!\str_starts_with($route, 'storybook_render_')) {
             return;
         }
 

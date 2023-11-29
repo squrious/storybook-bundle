@@ -1,11 +1,11 @@
 {
-    "name": "nicrig/storybook",
+    "name": "squrious/storybook-bundle",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Nicolas Rigaud",
-            "email": "nicolas.rigaud@sensiolabs.com"
+            "email": "squrious@protonmail.com"
         }
     ],
     "autoload": {

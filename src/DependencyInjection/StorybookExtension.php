@@ -23,6 +23,11 @@ class StorybookExtension extends Extension
         $processor = new Processor();
         $config = $processor->processConfiguration($configuration, $configs);
 
-        $container->setParameter('storybook.server', $config['server']);
+        if (isset($config['server'])) {
+            $container->getDefinition('storybook.listener.cors')
+                ->replaceArgument(1, $config['server']);
+        } else {
+            $container->removeDefinition('storybook.listener.cors');
+        }
     }
 }
