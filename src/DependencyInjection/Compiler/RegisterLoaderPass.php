@@ -10,7 +10,7 @@ class RegisterLoaderPass implements CompilerPassInterface
 {
     private const TAG_NAME = 'storybook.loader';
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $loader = $container->getDefinition('storybook.loader');
 

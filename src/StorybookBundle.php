@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class StorybookBundle extends Bundle implements ConfigurationInterface
 {
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->registerAttributeForAutoconfiguration(
             AsStorybookLoader::class,
