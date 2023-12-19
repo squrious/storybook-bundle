@@ -5,8 +5,9 @@ declare class TwigComponent {
     private readonly source;
     constructor(source: string);
     getSource(): string;
+    toString(): string;
 }
-declare function twig(source: TemplateStringsArray): TwigComponent;
+declare function twig(source: TemplateStringsArray, ...values: any[]): TwigComponent;
 
 type RulesConfig = any;
 type ModuleConfig = {

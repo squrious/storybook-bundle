@@ -7,9 +7,12 @@ var TwigComponent = class {
   getSource() {
     return this.source;
   }
+  toString() {
+    return this.source;
+  }
 };
-function twig(source) {
-  return new TwigComponent(source.raw[0]);
+function twig(source, ...values) {
+  return new TwigComponent(String.raw({ raw: source }, ...values));
 }
 
 // src/index.ts

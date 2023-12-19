@@ -84,9 +84,11 @@ export const unplugin = createUnplugin<SymfonyOptions>((options) => {
             .map(s => s.charAt(0).toUpperCase() + s.slice(1))
             .join('');
 
-          const component = (module[storyExportName].component ?? module['default'].component ?? {}) as TwigComponent;
+          const component = (module[storyExportName].component ?? module['default'].component ?? undefined);
 
-          storyIndex.register(story.id, component);
+          if (undefined !== component) {
+            storyIndex.register(story.id, component);
+          }
         })
       } catch (err: any) {
         logger.warn(err.message);

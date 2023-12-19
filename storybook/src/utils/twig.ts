@@ -6,9 +6,13 @@ export class TwigComponent {
     getSource() {
         return this.source;
     }
+
+    toString(): string {
+        return this.source;
+    }
 }
 
-export function twig(source: TemplateStringsArray): TwigComponent
+export function twig(source: TemplateStringsArray, ...values: any[]): TwigComponent
 {
-    return new TwigComponent(source.raw[0])
+    return new TwigComponent(String.raw({ raw: source }, ...values));
 }

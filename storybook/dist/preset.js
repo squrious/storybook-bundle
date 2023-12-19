@@ -5,6 +5,10 @@ var fs = require('fs/promises');
 var path = require('path');
 var nodeLogger = require('@storybook/node-logger');
 var crypto = require('crypto');
+var fsExtra = require('fs-extra');
+var dedent = require('ts-dedent');
+
+function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
 function _interopNamespace(e) {
   if (e && e.__esModule) return e;
@@ -26,6 +30,7 @@ function _interopNamespace(e) {
 
 var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
 var crypto__namespace = /*#__PURE__*/_interopNamespace(crypto);
+var dedent__default = /*#__PURE__*/_interopDefault(dedent);
 
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -36200,9 +36205,9 @@ var require_printer2 = __commonJS({
           if (n.declare) {
             parts.push("declare ");
           }
-          var access2 = n.accessibility || n.access;
-          if (typeof access2 === "string") {
-            parts.push(access2, " ");
+          var access3 = n.accessibility || n.access;
+          if (typeof access3 === "string") {
+            parts.push(access3, " ");
           }
           if (n.static) {
             parts.push("static ");
@@ -37149,9 +37154,9 @@ var require_printer2 = __commonJS({
       if (node.declare) {
         parts.push("declare ");
       }
-      var access2 = node.accessibility || node.access;
-      if (typeof access2 === "string") {
-        parts.push(access2, " ");
+      var access3 = node.accessibility || node.access;
+      if (typeof access3 === "string") {
+        parts.push(access3, " ");
       }
       if (node.static) {
         parts.push("static ");
@@ -64453,8 +64458,8 @@ var require_dist2 = __commonJS({
     var src_exports = {};
     __export2(src_exports, { ConfigFile: () => ConfigFile, CsfFile: () => CsfFile, NoMetaError: () => NoMetaError, babelParse: () => babelParse, babelParseExpression: () => babelParseExpression, babelPrint: () => babelPrint, enrichCsf: () => enrichCsf, enrichCsfMeta: () => enrichCsfMeta, enrichCsfStory: () => enrichCsfStory, extractDescription: () => extractDescription, extractSource: () => extractSource, formatConfig: () => formatConfig, formatCsf: () => formatCsf, getStorySortParameter: () => getStorySortParameter, loadConfig: () => loadConfig, loadCsf: () => loadCsf2, parserOptions: () => parserOptions, printConfig: () => printConfig, printCsf: () => printCsf, readConfig: () => readConfig, readCsf: () => readCsf, writeConfig: () => writeConfig, writeCsf: () => writeCsf });
     module.exports = __toCommonJS2(src_exports);
-    var import_fs_extra = __toESM2(__require("fs-extra"));
-    var import_ts_dedent = __require("ts-dedent");
+    var import_fs_extra2 = __toESM2(__require("fs-extra"));
+    var import_ts_dedent2 = __require("ts-dedent");
     var t2 = __toESM2(require_lib3());
     var generate = __toESM2(require_lib4());
     var recast2 = __toESM2(require_main2());
@@ -64531,7 +64536,7 @@ var require_dist2 = __commonJS({
     }, {});
     var NoMetaError = class extends Error {
       constructor(message, ast, fileName) {
-        super(import_ts_dedent.dedent`
+        super(import_ts_dedent2.dedent`
       CSF: ${message} ${formatLocation(ast, fileName)}
 
       More info: https://storybook.js.org/docs/react/writing-stories#default-export
@@ -64554,7 +64559,7 @@ var require_dist2 = __commonJS({
           return node.value;
         if (t2.isTSSatisfiesExpression(node) && t2.isStringLiteral(node.expression))
           return node.expression.value;
-        throw new Error(import_ts_dedent.dedent`
+        throw new Error(import_ts_dedent2.dedent`
       CSF: unexpected dynamic title ${formatLocation(node, this._fileName)}
 
       More info: https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#string-literal-titles
@@ -64663,7 +64668,7 @@ var require_dist2 = __commonJS({
         } }, CallExpression: { enter({ node }) {
           let { callee } = node;
           if (t2.isIdentifier(callee) && callee.name === "storiesOf")
-            throw new Error(import_ts_dedent.dedent`
+            throw new Error(import_ts_dedent2.dedent`
               Unexpected \`storiesOf\` usage: ${formatLocation(node, self2._fileName)}.
 
               In SB7, we use the next-generation \`storyStoreV7\` by default, which does not support \`storiesOf\`. 
@@ -64678,7 +64683,7 @@ var require_dist2 = __commonJS({
         } } }), !self2._meta)
           throw new NoMetaError("missing default export", self2._ast, self2._fileName);
         if (!self2._meta.title && !self2._meta.component)
-          throw new Error(import_ts_dedent.dedent`
+          throw new Error(import_ts_dedent2.dedent`
         CSF: missing title/component ${formatLocation(self2._ast, self2._fileName)}
 
         More info: https://storybook.js.org/docs/react/writing-stories#default-export
@@ -64715,7 +64720,7 @@ var require_dist2 = __commonJS({
       }
       get indexInputs() {
         if (!this._fileName)
-          throw new Error(import_ts_dedent.dedent`Cannot automatically create index inputs with CsfFile.indexInputs because the CsfFile instance was created without a the fileName option.
+          throw new Error(import_ts_dedent2.dedent`Cannot automatically create index inputs with CsfFile.indexInputs because the CsfFile instance was created without a the fileName option.
         Either add the fileName option when creating the CsfFile instance, or create the index inputs manually.`);
         return Object.entries(this._stories).map(([exportName, story]) => {
           var _a, _b, _c;
@@ -64737,16 +64742,16 @@ var require_dist2 = __commonJS({
     };
     var printCsf = (csf, options = {}) => recast2.print(csf._ast, options);
     var readCsf = async (fileName, options) => {
-      let code = (await import_fs_extra.default.readFile(fileName, "utf-8")).toString();
+      let code = (await import_fs_extra2.default.readFile(fileName, "utf-8")).toString();
       return loadCsf2(code, { ...options, fileName });
     };
     var writeCsf = async (csf, fileName) => {
       if (!(fileName || csf._fileName))
         throw new Error("Please specify a fileName for writeCsf");
-      await import_fs_extra.default.writeFile(fileName, printCsf(csf).code);
+      await import_fs_extra2.default.writeFile(fileName, printCsf(csf).code);
     };
-    var import_fs_extra2 = __toESM2(__require("fs-extra"));
-    var import_ts_dedent2 = __toESM2(__require("ts-dedent"));
+    var import_fs_extra22 = __toESM2(__require("fs-extra"));
+    var import_ts_dedent22 = __toESM2(__require("ts-dedent"));
     var t3 = __toESM2(require_lib3());
     var generate2 = __toESM2(require_lib4());
     var traverse2 = __toESM2(require_lib13());
@@ -64759,7 +64764,7 @@ var require_dist2 = __commonJS({
           nodeInfo = JSON.stringify(node);
         } catch {
         }
-      return import_ts_dedent2.default`
+      return import_ts_dedent22.default`
       CSF Parsing error: Expected '${expectedType}' but found '${foundType}' instead in '${node == null ? void 0 : node.type}'.
       ${nodeInfo}
     `;
@@ -65004,14 +65009,14 @@ var require_dist2 = __commonJS({
     var formatConfig = (config) => printConfig(config).code;
     var printConfig = (config, options = {}) => recast3.print(config._ast, options);
     var readConfig = async (fileName) => {
-      let code = (await import_fs_extra2.default.readFile(fileName, "utf-8")).toString();
+      let code = (await import_fs_extra22.default.readFile(fileName, "utf-8")).toString();
       return loadConfig(code, fileName).parse();
     };
     var writeConfig = async (config, fileName) => {
       let fname = fileName || config.fileName;
       if (!fname)
         throw new Error("Please specify a fileName for writeConfig");
-      await import_fs_extra2.default.writeFile(fname, formatConfig(config));
+      await import_fs_extra22.default.writeFile(fname, formatConfig(config));
     };
     var t4 = __toESM2(require_lib3());
     var traverse3 = __toESM2(require_lib13());
@@ -65210,8 +65215,10 @@ var unplugin = unplugin$1.createUnplugin((options) => {
         const csf = (0, import_csf_tools.loadCsf)(code, { makeTitle }).parse();
         csf.stories.forEach((story) => {
           const storyExportName = story.id.split("--")[1].split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join("");
-          const component = module[storyExportName].component ?? module["default"].component ?? {};
-          storyIndex.register(story.id, component);
+          const component = module[storyExportName].component ?? module["default"].component ?? void 0;
+          if (void 0 !== component) {
+            storyIndex.register(story.id, component);
+          }
         });
       } catch (err) {
         nodeLogger.logger.warn(err.message);
@@ -65260,7 +65267,15 @@ var webpackFinal = async (config, options) => {
 };
 var previewMainTemplate = async (path$1, options) => {
   const { symfony } = await options.presets.apply("frameworkOptions");
-  return __require.resolve(path.join(symfony.runtimePath, "preview/preview.ejs"));
+  const previewPath = path.join(symfony.runtimePath, "preview/preview.ejs");
+  try {
+    await fsExtra.access(previewPath);
+    return __require.resolve(path.join(symfony.runtimePath, "preview/preview.ejs"));
+  } catch (err) {
+    throw new Error(dedent__default.default`
+      Unable to find preview template "${previewPath}". Did you forget to run "bin/console storybook:init"?
+    `);
+  }
 };
 var previewAnnotations = (entry = [], options) => {
   return [__require.resolve("./preview"), ...entry];

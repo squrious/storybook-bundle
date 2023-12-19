@@ -56,6 +56,12 @@ const config: StorybookConfig = {
 export default config;
 ```
 
+Initialize Storybook bundle with:
+
+```shell
+bin/console storybook:init
+```
+
 Run Storybook with:
 ```shell
 yarn run storybook
