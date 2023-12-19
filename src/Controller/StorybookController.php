@@ -22,7 +22,6 @@ class StorybookController
         $template = $this->templateLocator->locateTemplate($id);
 
         try {
-//            $content = $this->twig->render('@Storybook/story.html.twig', ['story' => $template, 'args' => $data]);
             $content = $this->twig->load($template)->render(['args' => $data]);
         } catch (\Throwable $th) {
             throw new RenderException('Unable to render story.', $th);

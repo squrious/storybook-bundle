@@ -21,6 +21,13 @@ class StorybookLoader
     {
         $data = $request->query->all();
 
+        foreach ($data as $key => $value) {
+            $decoded = json_decode($value, associative: true);
+            if (\JSON_ERROR_NONE === json_last_error()) {
+                $data[$key] = $decoded;
+            }
+        }
+
         foreach ($this->loaders[$name] ?? [] as $loader) {
             if (!\is_callable($loader)) {
                 throw new \LogicException('Loader must be callable');
