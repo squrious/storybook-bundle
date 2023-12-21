@@ -1,11 +1,13 @@
 import { createUnplugin } from 'unplugin';
 import { SymfonyOptions } from "./types";
 import * as fs from "fs/promises";
-import { loadCsf, StaticStory } from '@storybook/csf-tools';
+import { loadCsf, readCsf, StaticStory } from '@storybook/csf-tools';
 import { TwigComponent } from './utils';
 import { join } from 'path';
 import { logger } from '@storybook/node-logger'
 import * as crypto from 'crypto';
+import VirtualModulesPlugin from 'webpack-virtual-modules';
+import dedent from 'ts-dedent';
 
 export const STORIES_REGEX = /\.stories\.[tj]s?$/;
 
@@ -37,7 +39,7 @@ class TwigStoriesIndex {
 
 }
 
-const storyIndex = new TwigStoriesIndex();
+export const storyIndex = new TwigStoriesIndex();
 
 async function cleanStories(dir: string)
 {
@@ -65,44 +67,35 @@ export const unplugin = createUnplugin<SymfonyOptions>((options) => {
 
   return {
     name: 'storybook-addon-symfony',
-    enforce: "pre",
-    loadInclude(id) {
+    enforce: "post",
+    transformInclude: (id)=> {
       return STORIES_REGEX.test(id);
     },
-    async load(entry: string) {
-      const code = await fs.readFile(entry, {encoding: 'utf-8'});
-      delete require.cache[entry]
-      const module = require(entry)
-
-      try {
-        const makeTitle = (userTitle: string) => userTitle || 'default';
-        const csf = loadCsf(code, { makeTitle }).parse();
-
-        csf.stories.forEach((story) => {
-          const storyExportName = story.id.split('--')[1]
-            .split('-')
-            .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-            .join('');
-
-          const component = (module[storyExportName].component ?? module['default'].component ?? undefined);
-
-          if (undefined !== component) {
-            storyIndex.register(story.id, component);
-          }
-        })
-      } catch (err: any) {
-        logger.warn(err.message);
-      }
-
-      // Twig processing doesn't result in anything loaded from SB side
-      return null;
+    transform: async (code, id) => {
+      delete require.cache[id];
+      const m = require(id);
+      const imports: string[] = m['default']?.imports ?? [];
+      console.log('\n TRANSFORM');
+      return dedent`
+        ${code}
+        
+        ; export const __twigTemplates = [
+            ${imports.map(template => `import(
+                /* webpackChunkName: "[request]" */
+                /* webpackInclude: /\\/templates\\/components\\/.*\\.html\\.twig$/ */
+                '${template}'
+            )`)}
+        ];
+        ;  
+      `;
     },
+
     buildStart: async () => {
       await cleanStories(outDir);
     },
     buildEnd: async (error?: Error) => {
       await writeStoriesMap(outDir);
-    }
+    },
   };
 });
 

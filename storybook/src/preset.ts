@@ -1,10 +1,11 @@
-import { webpack } from './unplugin';
+import { webpack as sfPlugin } from './unplugin';
 import { FrameworkOptions, SymfonyOptions } from './types';
 import {StorybookConfig} from "@storybook/server-webpack5";
-import { Options, PresetProperty, Entry } from '@storybook/types';
+import { Options, PresetProperty, Entry, Indexer } from '@storybook/types';
 import { join } from 'path';
 import { access } from 'fs-extra';
 import dedent from 'ts-dedent';
+import { twigIndexer } from './indexer';
 
 export const core: PresetProperty<'core'> = async (config, options) => {
   const framework = await options.presets.apply('framework');
@@ -42,18 +43,36 @@ export const frameworkOptions = async (frameworkOptions: FrameworkOptions, optio
 // };
 //
 
-export const webpackFinal: StorybookConfig['webpackFinal'] = async (config , options ) => {
-  const { plugins = [] } = config;
+export const webpack: StorybookConfig['webpack'] = async (config, options) => {
+    const frameworkOptions = await options.presets.apply<{ symfony: SymfonyOptions }>('frameworkOptions')
 
-  const frameworkOptions = await options.presets.apply<{ symfony: SymfonyOptions }>('frameworkOptions')
+    return {
+        ...config,
+        plugins: [
+          ...(config.plugins || []),
+            sfPlugin(frameworkOptions.symfony),
+        ],
+        module: {
+            ...config.module,
+            rules: [
+                ...(config.module.rules || []),
+                {
+                    test: /\.html\.twig$/,
+                    loader: require.resolve('html-loader'),
+                },
+            ]
+        },
+        resolve: {
+            ...config.resolve,
+            extensions: [...(config.resolve?.extensions || []), '.twig'],
+            alias: config.resolve?.alias,
+            mainFields: ['twig', ...(config.resolve?.mainFields || ['browser', 'module', 'main'])]
+        }
+    };
+}
 
-  config.plugins = [
-      ...plugins,
-    webpack(frameworkOptions.symfony)
-  ];
-
-  return config;
-};
+export const experimental_indexers: PresetProperty<'experimental_indexers'> = (existingIndexers: Indexer[]) =>
+    [twigIndexer].concat(existingIndexers || []);
 
 export const previewMainTemplate = async (path: string, options: Options) => {
   const { symfony } = await options.presets.apply<{ symfony: SymfonyOptions }>('frameworkOptions');
@@ -61,7 +80,7 @@ export const previewMainTemplate = async (path: string, options: Options) => {
   const previewPath = join(symfony.runtimePath, 'preview/preview.ejs');
   try {
     await access(previewPath);
-    return require.resolve(join(symfony.runtimePath, 'preview/preview.ejs'));
+    return require.resolve(previewPath);
 
   } catch (err) {
     throw new Error(dedent`

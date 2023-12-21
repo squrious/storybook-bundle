@@ -3,10 +3,9 @@
 var unplugin$1 = require('unplugin');
 var fs = require('fs/promises');
 var path = require('path');
-var nodeLogger = require('@storybook/node-logger');
 var crypto = require('crypto');
-var fsExtra = require('fs-extra');
 var dedent = require('ts-dedent');
+var fsExtra = require('fs-extra');
 
 function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
@@ -64456,10 +64455,10 @@ var require_dist2 = __commonJS({
     var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target, mod));
     var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
     var src_exports = {};
-    __export2(src_exports, { ConfigFile: () => ConfigFile, CsfFile: () => CsfFile, NoMetaError: () => NoMetaError, babelParse: () => babelParse, babelParseExpression: () => babelParseExpression, babelPrint: () => babelPrint, enrichCsf: () => enrichCsf, enrichCsfMeta: () => enrichCsfMeta, enrichCsfStory: () => enrichCsfStory, extractDescription: () => extractDescription, extractSource: () => extractSource, formatConfig: () => formatConfig, formatCsf: () => formatCsf, getStorySortParameter: () => getStorySortParameter, loadConfig: () => loadConfig, loadCsf: () => loadCsf2, parserOptions: () => parserOptions, printConfig: () => printConfig, printCsf: () => printCsf, readConfig: () => readConfig, readCsf: () => readCsf, writeConfig: () => writeConfig, writeCsf: () => writeCsf });
+    __export2(src_exports, { ConfigFile: () => ConfigFile, CsfFile: () => CsfFile, NoMetaError: () => NoMetaError, babelParse: () => babelParse, babelParseExpression: () => babelParseExpression, babelPrint: () => babelPrint, enrichCsf: () => enrichCsf, enrichCsfMeta: () => enrichCsfMeta, enrichCsfStory: () => enrichCsfStory, extractDescription: () => extractDescription, extractSource: () => extractSource, formatConfig: () => formatConfig, formatCsf: () => formatCsf, getStorySortParameter: () => getStorySortParameter, loadConfig: () => loadConfig, loadCsf: () => loadCsf, parserOptions: () => parserOptions, printConfig: () => printConfig, printCsf: () => printCsf, readConfig: () => readConfig, readCsf: () => readCsf2, writeConfig: () => writeConfig, writeCsf: () => writeCsf });
     module.exports = __toCommonJS2(src_exports);
     var import_fs_extra2 = __toESM2(__require("fs-extra"));
-    var import_ts_dedent2 = __require("ts-dedent");
+    var import_ts_dedent3 = __require("ts-dedent");
     var t2 = __toESM2(require_lib3());
     var generate = __toESM2(require_lib4());
     var recast2 = __toESM2(require_main2());
@@ -64482,7 +64481,7 @@ var require_dist2 = __commonJS({
       let init = null, declarations = null;
       return program.body.find((node) => (t.isVariableDeclaration(node) ? declarations = node.declarations : t.isExportNamedDeclaration(node) && t.isVariableDeclaration(node.declaration) && (declarations = node.declaration.declarations), declarations && declarations.find((decl) => t.isVariableDeclarator(decl) && t.isIdentifier(decl.id) && decl.id.name === identifier3 ? (init = decl.init, true) : false))), init;
     };
-    var logger2 = console;
+    var logger = console;
     function parseIncludeExclude(prop) {
       if (t2.isArrayExpression(prop))
         return prop.elements.map((e) => {
@@ -64536,7 +64535,7 @@ var require_dist2 = __commonJS({
     }, {});
     var NoMetaError = class extends Error {
       constructor(message, ast, fileName) {
-        super(import_ts_dedent2.dedent`
+        super(import_ts_dedent3.dedent`
       CSF: ${message} ${formatLocation(ast, fileName)}
 
       More info: https://storybook.js.org/docs/react/writing-stories#default-export
@@ -64559,7 +64558,7 @@ var require_dist2 = __commonJS({
           return node.value;
         if (t2.isTSSatisfiesExpression(node) && t2.isStringLiteral(node.expression))
           return node.expression.value;
-        throw new Error(import_ts_dedent2.dedent`
+        throw new Error(import_ts_dedent3.dedent`
       CSF: unexpected dynamic title ${formatLocation(node, this._fileName)}
 
       More info: https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#string-literal-titles
@@ -64622,7 +64621,7 @@ var require_dist2 = __commonJS({
               }
               self2._storyExports[exportName] = decl, self2._storyStatements[exportName] = node;
               let name = (0, import_csf.storyNameFromExport)(exportName);
-              self2._storyAnnotations[exportName] ? logger2.warn(`Unexpected annotations for "${exportName}" before story declaration`) : self2._storyAnnotations[exportName] = {};
+              self2._storyAnnotations[exportName] ? logger.warn(`Unexpected annotations for "${exportName}" before story declaration`) : self2._storyAnnotations[exportName] = {};
               let storyNode;
               t2.isVariableDeclarator(decl) ? storyNode = t2.isTSAsExpression(decl.init) || t2.isTSSatisfiesExpression(decl.init) ? decl.init.expression : decl.init : storyNode = decl;
               let parameters = {};
@@ -64633,7 +64632,7 @@ var require_dist2 = __commonJS({
                   else if (p.key.name === "name" && t2.isStringLiteral(p.value))
                     name = p.value.value;
                   else if (p.key.name === "storyName" && t2.isStringLiteral(p.value))
-                    logger2.warn(`Unexpected usage of "storyName" in "${exportName}". Please use "name" instead.`);
+                    logger.warn(`Unexpected usage of "storyName" in "${exportName}". Please use "name" instead.`);
                   else if (p.key.name === "parameters" && t2.isObjectExpression(p.value)) {
                     let idProperty = p.value.properties.find((property) => t2.isObjectProperty(property) && t2.isIdentifier(property.key) && property.key.name === "__id");
                     idProperty && (parameters.__id = idProperty.value.value);
@@ -64668,7 +64667,7 @@ var require_dist2 = __commonJS({
         } }, CallExpression: { enter({ node }) {
           let { callee } = node;
           if (t2.isIdentifier(callee) && callee.name === "storiesOf")
-            throw new Error(import_ts_dedent2.dedent`
+            throw new Error(import_ts_dedent3.dedent`
               Unexpected \`storiesOf\` usage: ${formatLocation(node, self2._fileName)}.
 
               In SB7, we use the next-generation \`storyStoreV7\` by default, which does not support \`storiesOf\`. 
@@ -64683,7 +64682,7 @@ var require_dist2 = __commonJS({
         } } }), !self2._meta)
           throw new NoMetaError("missing default export", self2._ast, self2._fileName);
         if (!self2._meta.title && !self2._meta.component)
-          throw new Error(import_ts_dedent2.dedent`
+          throw new Error(import_ts_dedent3.dedent`
         CSF: missing title/component ${formatLocation(self2._ast, self2._fileName)}
 
         More info: https://storybook.js.org/docs/react/writing-stories#default-export
@@ -64720,7 +64719,7 @@ var require_dist2 = __commonJS({
       }
       get indexInputs() {
         if (!this._fileName)
-          throw new Error(import_ts_dedent2.dedent`Cannot automatically create index inputs with CsfFile.indexInputs because the CsfFile instance was created without a the fileName option.
+          throw new Error(import_ts_dedent3.dedent`Cannot automatically create index inputs with CsfFile.indexInputs because the CsfFile instance was created without a the fileName option.
         Either add the fileName option when creating the CsfFile instance, or create the index inputs manually.`);
         return Object.entries(this._stories).map(([exportName, story]) => {
           var _a, _b, _c;
@@ -64729,7 +64728,7 @@ var require_dist2 = __commonJS({
         });
       }
     };
-    var loadCsf2 = (code, options) => {
+    var loadCsf = (code, options) => {
       let ast = babelParse(code);
       return new CsfFile(ast, options);
     };
@@ -64741,9 +64740,9 @@ var require_dist2 = __commonJS({
       return code;
     };
     var printCsf = (csf, options = {}) => recast2.print(csf._ast, options);
-    var readCsf = async (fileName, options) => {
+    var readCsf2 = async (fileName, options) => {
       let code = (await import_fs_extra2.default.readFile(fileName, "utf-8")).toString();
-      return loadCsf2(code, { ...options, fileName });
+      return loadCsf(code, { ...options, fileName });
     };
     var writeCsf = async (csf, fileName) => {
       if (!(fileName || csf._fileName))
@@ -64756,7 +64755,7 @@ var require_dist2 = __commonJS({
     var generate2 = __toESM2(require_lib4());
     var traverse2 = __toESM2(require_lib13());
     var recast3 = __toESM2(require_main2());
-    var logger22 = console;
+    var logger2 = console;
     var getCsfParsingErrorMessage = ({ expectedType, foundType, node }) => {
       let nodeInfo = "";
       if (node)
@@ -64823,7 +64822,7 @@ var require_dist2 = __commonJS({
               let exportVal = p.value;
               t3.isIdentifier(exportVal) && (exportVal = _findVarInitialization(exportVal.name, parent)), self2._exports[exportName] = exportVal;
             }
-          })) : logger22.warn(getCsfParsingErrorMessage({ expectedType: "ObjectExpression", foundType: decl == null ? void 0 : decl.type, node: decl || node.declaration }));
+          })) : logger2.warn(getCsfParsingErrorMessage({ expectedType: "ObjectExpression", foundType: decl == null ? void 0 : decl.type, node: decl || node.declaration }));
         } }, ExportNamedDeclaration: { enter({ node, parent }) {
           var _a;
           t3.isVariableDeclaration(node.declaration) ? node.declaration.declarations.forEach((decl) => {
@@ -64831,7 +64830,7 @@ var require_dist2 = __commonJS({
               let { name: exportName } = decl.id, exportVal = decl.init;
               t3.isIdentifier(exportVal) && (exportVal = _findVarInitialization(exportVal.name, parent)), self2._exports[exportName] = exportVal, self2._exportDecls[exportName] = decl;
             }
-          }) : logger22.warn(getCsfParsingErrorMessage({ expectedType: "VariableDeclaration", foundType: (_a = node.declaration) == null ? void 0 : _a.type, node: node.declaration }));
+          }) : logger2.warn(getCsfParsingErrorMessage({ expectedType: "VariableDeclaration", foundType: (_a = node.declaration) == null ? void 0 : _a.type, node: node.declaration }));
         } }, ExpressionStatement: { enter({ node, parent }) {
           if (t3.isAssignmentExpression(node.expression) && node.expression.operator === "=") {
             let { left, right } = node.expression;
@@ -64843,7 +64842,7 @@ var require_dist2 = __commonJS({
                   let exportVal = p.value;
                   t3.isIdentifier(exportVal) && (exportVal = _findVarInitialization(exportVal.name, parent)), self2._exports[exportName] = exportVal;
                 }
-              })) : logger22.warn(getCsfParsingErrorMessage({ expectedType: "ObjectExpression", foundType: exportObject == null ? void 0 : exportObject.type, node: exportObject }));
+              })) : logger2.warn(getCsfParsingErrorMessage({ expectedType: "ObjectExpression", foundType: exportObject == null ? void 0 : exportObject.type, node: exportObject }));
             }
           }
         } } }), self2;
@@ -65021,7 +65020,7 @@ var require_dist2 = __commonJS({
     var t4 = __toESM2(require_lib3());
     var traverse3 = __toESM2(require_lib13());
     var generate3 = __toESM2(require_lib4());
-    var import_ts_dedent3 = __require("ts-dedent");
+    var import_ts_dedent32 = __require("ts-dedent");
     var logger3 = console;
     var getValue = (obj, key) => {
       let value;
@@ -65041,7 +65040,7 @@ var require_dist2 = __commonJS({
       throw new Error(`Unknown node type ${expr.type}`);
     };
     var unsupported = (unexpectedVar, isError) => {
-      let message = import_ts_dedent3.dedent`
+      let message = import_ts_dedent32.dedent`
     Unexpected '${unexpectedVar}'. Parameter 'options.storySort' should be defined inline e.g.:
 
     export default {
@@ -65160,9 +65159,6 @@ var require_dist2 = __commonJS({
 `) : "";
   }
 });
-
-// src/unplugin.ts
-var import_csf_tools = __toESM(require_dist2());
 var STORIES_REGEX = /\.stories\.[tj]s?$/;
 var TwigStoriesIndex = class {
   constructor() {
@@ -65202,28 +65198,28 @@ var unplugin = unplugin$1.createUnplugin((options) => {
   const outDir = path.join(options.runtimePath, "/stories");
   return {
     name: "storybook-addon-symfony",
-    enforce: "pre",
-    loadInclude(id) {
+    enforce: "post",
+    transformInclude: (id) => {
       return STORIES_REGEX.test(id);
     },
-    async load(entry) {
-      const code = await fs__namespace.readFile(entry, { encoding: "utf-8" });
-      delete __require.cache[entry];
-      const module = __require(entry);
-      try {
-        const makeTitle = (userTitle) => userTitle || "default";
-        const csf = (0, import_csf_tools.loadCsf)(code, { makeTitle }).parse();
-        csf.stories.forEach((story) => {
-          const storyExportName = story.id.split("--")[1].split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join("");
-          const component = module[storyExportName].component ?? module["default"].component ?? void 0;
-          if (void 0 !== component) {
-            storyIndex.register(story.id, component);
-          }
-        });
-      } catch (err) {
-        nodeLogger.logger.warn(err.message);
-      }
-      return null;
+    transform: async (code, id) => {
+      var _a;
+      delete __require.cache[id];
+      const m = __require(id);
+      const imports = ((_a = m["default"]) == null ? void 0 : _a.imports) ?? [];
+      console.log("\n TRANSFORM");
+      return dedent__default.default`
+        ${code}
+        
+        ; export const __twigTemplates = [
+            ${imports.map((template) => `import(
+                /* webpackChunkName: "[request]" */
+                /* webpackInclude: /\\/templates\\/components\\/.*\\.html\\.twig$/ */
+                '${template}'
+            )`)}
+        ];
+        ;  
+      `;
     },
     buildStart: async () => {
       await cleanStories(outDir);
@@ -65234,6 +65230,26 @@ var unplugin = unplugin$1.createUnplugin((options) => {
   };
 });
 var { webpack } = unplugin;
+
+// src/indexer.ts
+var import_csf_tools = __toESM(require_dist2());
+var twigIndexer = {
+  test: /(stories|story)\.(m?js|ts)x?$/,
+  createIndex: async (fileName, options) => {
+    const csf = (await (0, import_csf_tools.readCsf)(fileName, { ...options })).parse();
+    const module = __require(fileName);
+    csf.indexInputs.forEach((story) => {
+      var _a, _b;
+      const component = ((_a = module[story.exportName]) == null ? void 0 : _a.component) ?? ((_b = module["default"]) == null ? void 0 : _b.component) ?? void 0;
+      if (void 0 !== component) {
+        storyIndex.register(story.__id, component);
+      }
+    });
+    return csf.indexInputs;
+  }
+};
+
+// src/preset.ts
 var core = async (config, options) => {
   const framework = await options.presets.apply("framework");
   return {
@@ -65256,21 +65272,40 @@ var frameworkOptions = async (frameworkOptions2, options) => {
     symfony: symfonyOptions
   };
 };
-var webpackFinal = async (config, options) => {
-  const { plugins = [] } = config;
+var webpack2 = async (config, options) => {
+  var _a, _b, _c;
   const frameworkOptions2 = await options.presets.apply("frameworkOptions");
-  config.plugins = [
-    ...plugins,
-    webpack(frameworkOptions2.symfony)
-  ];
-  return config;
+  return {
+    ...config,
+    plugins: [
+      ...config.plugins || [],
+      webpack(frameworkOptions2.symfony)
+    ],
+    module: {
+      ...config.module,
+      rules: [
+        ...config.module.rules || [],
+        {
+          test: /\.html\.twig$/,
+          loader: __require.resolve("html-loader")
+        }
+      ]
+    },
+    resolve: {
+      ...config.resolve,
+      extensions: [...((_a = config.resolve) == null ? void 0 : _a.extensions) || [], ".twig"],
+      alias: (_b = config.resolve) == null ? void 0 : _b.alias,
+      mainFields: ["twig", ...((_c = config.resolve) == null ? void 0 : _c.mainFields) || ["browser", "module", "main"]]
+    }
+  };
 };
+var experimental_indexers = (existingIndexers) => [twigIndexer].concat(existingIndexers || []);
 var previewMainTemplate = async (path$1, options) => {
   const { symfony } = await options.presets.apply("frameworkOptions");
   const previewPath = path.join(symfony.runtimePath, "preview/preview.ejs");
   try {
     await fsExtra.access(previewPath);
-    return __require.resolve(path.join(symfony.runtimePath, "preview/preview.ejs"));
+    return __require.resolve(previewPath);
   } catch (err) {
     throw new Error(dedent__default.default`
       Unable to find preview template "${previewPath}". Did you forget to run "bin/console storybook:init"?
@@ -65282,9 +65317,10 @@ var previewAnnotations = (entry = [], options) => {
 };
 
 exports.core = core;
+exports.experimental_indexers = experimental_indexers;
 exports.frameworkOptions = frameworkOptions;
 exports.previewAnnotations = previewAnnotations;
 exports.previewMainTemplate = previewMainTemplate;
-exports.webpackFinal = webpackFinal;
+exports.webpack = webpack2;
 //# sourceMappingURL=out.js.map
 //# sourceMappingURL=preset.js.map
