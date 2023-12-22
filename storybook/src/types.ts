@@ -1,60 +1,71 @@
 import type {
-  StorybookConfig as StorybookConfigBase,
-  TypescriptOptions as TypescriptOptionsReact,
+    StorybookConfig as StorybookConfigBase,
+    TypescriptOptions as TypescriptOptionsReact,
 } from '@storybook/preset-server-webpack';
 
 import type {
-  StorybookConfigWebpack,
-  BuilderOptions,
-  TypescriptOptions as TypescriptOptionsBuilder,
+    StorybookConfigWebpack,
+    BuilderOptions,
+    TypescriptOptions as TypescriptOptionsBuilder,
 } from '@storybook/builder-webpack5';
 
 type FrameworkName = '@storybook/symfony-webpack5';
 type BuilderName = '@storybook/builder-webpack5';
 
-type AdditionalWatchPath = string[] | string
 type ProxyPaths = string[] | string
 
-
 export type SymfonyOptions = {
-  server: string
-  runtimePath?: string
-  proxyPaths?: ProxyPaths
+    /**
+     * Symfony server URL.
+     */
+    server: string
 
-  // TODO: Add more watch paths to handle HMR for SF assets
-  /*additionalWatchPath?: AdditionalWatchPath*/
+    /**
+     * Location of Storybook generated assets for Symfony renderer.
+     */
+    runtimePath?: string
+
+    /**
+     * Paths to proxy to the Symfony server. This is useful to resolve assets (i.e. with '/assets').
+     */
+    proxyPaths?: ProxyPaths
+
+    /**
+     * Whether to configure AssetMapper integration. This will enable hot reload when mapped assets changed.
+     */
+    useAssetMapper?: boolean
 }
 
 export type FrameworkOptions = {
-  builder?: BuilderOptions;
-  symfony?: SymfonyOptions;
+    builder?: BuilderOptions;
+    symfony?: SymfonyOptions;
 };
 
 type StorybookConfigFramework = {
-  framework:
-    | FrameworkName
-    | {
-    name: FrameworkName;
-    options: FrameworkOptions;
-  };
-  core?: StorybookConfigBase['core'] & {
-    builder?:
-      | BuilderName
-      | {
-      name: BuilderName;
-      options: BuilderOptions;
+    framework:
+        | FrameworkName
+        | {
+        name: FrameworkName;
+        options: FrameworkOptions;
     };
-  };
-  typescript?: Partial<TypescriptOptionsBuilder & TypescriptOptionsReact> &
-    StorybookConfigBase['typescript'];
+    core?: StorybookConfigBase['core'] & {
+        builder?:
+            | BuilderName
+            | {
+            name: BuilderName;
+            options: BuilderOptions;
+        };
+    };
+    typescript?: Partial<TypescriptOptionsBuilder & TypescriptOptionsReact> &
+        StorybookConfigBase['typescript'];
 };
 
 /**
  * The interface for Storybook configuration in `main.ts` files.
  */
 export type StorybookConfig = Omit<
-  StorybookConfigBase,
-  keyof StorybookConfigWebpack | keyof StorybookConfigFramework
+    StorybookConfigBase,
+    keyof StorybookConfigWebpack | keyof StorybookConfigFramework
 > &
-  StorybookConfigWebpack &
-  StorybookConfigFramework;
+    StorybookConfigWebpack &
+    StorybookConfigFramework;

@@ -28,7 +28,7 @@ function _interopNamespace(e) {
 }
 
 var fs__namespace = /*#__PURE__*/_interopNamespace(fs);
-var crypto__namespace = /*#__PURE__*/_interopNamespace(crypto);
+var crypto__default = /*#__PURE__*/_interopDefault(crypto);
 var dedent__default = /*#__PURE__*/_interopDefault(dedent);
 
 var __create = Object.create;
@@ -65159,17 +65159,21 @@ var require_dist2 = __commonJS({
 `) : "";
   }
 });
-var STORIES_REGEX = /\.stories\.[tj]s?$/;
-var TwigStoriesIndex = class {
+
+// src/indexer.ts
+var import_csf_tools = __toESM(require_dist2());
+var TwigStoriesIndexer = class {
   constructor() {
     this.templates = /* @__PURE__ */ new Map();
     this.storyIndex = /* @__PURE__ */ new Map();
+    this.files = /* @__PURE__ */ new Set();
   }
-  register(id, component) {
-    const hash = crypto__namespace.createHash("sha1").update(component.getSource()).digest("hex");
+  register(id, component, declaringFile) {
+    const hash = crypto__default.default.createHash("sha1").update(component.getSource()).digest("hex");
     if (!this.templates.has(hash)) {
       this.templates.set(hash, component.getSource());
     }
+    this.files.add(declaringFile);
     this.storyIndex.set(id, hash);
   }
   getMap() {
@@ -65178,8 +65182,36 @@ var TwigStoriesIndex = class {
   getTemplates() {
     return this.templates;
   }
+  fileHasTemplates(fileName) {
+    return this.files.has(fileName);
+  }
 };
-var storyIndex = new TwigStoriesIndex();
+var twigCsfIndexer = {
+  test: /(stories|story)\.(m?js|ts)x?$/,
+  createIndex: async (fileName, options) => {
+    const csf = (await (0, import_csf_tools.readCsf)(fileName, { ...options })).parse();
+    const twigIndexer2 = getTwigStoriesIndexer();
+    const module = __require(fileName);
+    csf.indexInputs.forEach((story) => {
+      var _a, _b;
+      const component = ((_a = module[story.exportName]) == null ? void 0 : _a.component) ?? ((_b = module["default"]) == null ? void 0 : _b.component) ?? void 0;
+      if (void 0 !== component) {
+        twigIndexer2.register(story.__id, component, fileName);
+      }
+    });
+    return csf.indexInputs;
+  }
+};
+var twigIndexer;
+function getTwigStoriesIndexer() {
+  if (twigIndexer !== void 0) {
+    return twigIndexer;
+  }
+  console.log("creating new indexer");
+  return twigIndexer = new TwigStoriesIndexer();
+}
+
+// src/plugins/twig-template-indexer.ts
 async function cleanStories(dir) {
   try {
     await fs__namespace.access(dir, fs__namespace.constants.F_OK);
@@ -65190,6 +65222,7 @@ async function cleanStories(dir) {
   }
 }
 async function writeStoriesMap(dir) {
+  const storyIndex = getTwigStoriesIndexer();
   const storiesMap = storyIndex.getMap();
   await fs__namespace.writeFile(path.join(dir, "storiesMap.json"), JSON.stringify(storiesMap), { encoding: "utf-8" });
   return Array.from(storyIndex.getTemplates(), ([hash, source]) => fs__namespace.writeFile(path.join(dir, `${hash}.html.twig`), source));
@@ -65197,30 +65230,7 @@ async function writeStoriesMap(dir) {
 var unplugin = unplugin$1.createUnplugin((options) => {
   const outDir = path.join(options.runtimePath, "/stories");
   return {
-    name: "storybook-addon-symfony",
-    enforce: "post",
-    transformInclude: (id) => {
-      return STORIES_REGEX.test(id);
-    },
-    transform: async (code, id) => {
-      var _a;
-      delete __require.cache[id];
-      const m = __require(id);
-      const imports = ((_a = m["default"]) == null ? void 0 : _a.imports) ?? [];
-      console.log("\n TRANSFORM");
-      return dedent__default.default`
-        ${code}
-        
-        ; export const __twigTemplates = [
-            ${imports.map((template) => `import(
-                /* webpackChunkName: "[request]" */
-                /* webpackInclude: /\\/templates\\/components\\/.*\\.html\\.twig$/ */
-                '${template}'
-            )`)}
-        ];
-        ;  
-      `;
-    },
+    name: "twig-template-indexer",
     buildStart: async () => {
       await cleanStories(outDir);
     },
@@ -65230,32 +65240,40 @@ var unplugin = unplugin$1.createUnplugin((options) => {
   };
 });
 var { webpack } = unplugin;
-
-// src/indexer.ts
-var import_csf_tools = __toESM(require_dist2());
-var twigIndexer = {
-  test: /(stories|story)\.(m?js|ts)x?$/,
-  createIndex: async (fileName, options) => {
-    const csf = (await (0, import_csf_tools.readCsf)(fileName, { ...options })).parse();
-    const module = __require(fileName);
-    csf.indexInputs.forEach((story) => {
-      var _a, _b;
-      const component = ((_a = module[story.exportName]) == null ? void 0 : _a.component) ?? ((_b = module["default"]) == null ? void 0 : _b.component) ?? void 0;
-      if (void 0 !== component) {
-        storyIndex.register(story.__id, component);
-      }
-    });
-    return csf.indexInputs;
-  }
-};
-
-// src/preset.ts
+var STORIES_REGEX = /\.stories\.[tj]s?$/;
+var unplugin2 = unplugin$1.createUnplugin((options) => {
+  const twigStoriesIndexer = getTwigStoriesIndexer();
+  return {
+    name: "storybook-addon-symfony",
+    enforce: "post",
+    transformInclude: (id) => {
+      return STORIES_REGEX.test(id) && twigStoriesIndexer.fileHasTemplates(id);
+    },
+    transform: async (code, id) => {
+      var _a;
+      delete __require.cache[id];
+      const m = __require(id);
+      const imports = ((_a = m["default"]) == null ? void 0 : _a.imports) ?? [];
+      return dedent__default.default`
+            ${code}
+            
+            ; export const __twigTemplates = [
+                ${imports.map((template) => `import(
+                    /* webpackInclude: /\\/templates\\/components\\/.*\\.html\\.twig$/ */
+                    '${template}'
+                )`)}
+            ];
+          `;
+    }
+  };
+});
+var { webpack: webpack2 } = unplugin2;
 var core = async (config, options) => {
   const framework = await options.presets.apply("framework");
   return {
     ...config,
     builder: {
-      name: __require.resolve("./builder/webpack5-builder"),
+      name: __require.resolve("./builders/webpack5-builder"),
       options: typeof framework === "string" ? {} : framework.options.builder || {}
     },
     renderer: "@storybook/server"
@@ -65272,34 +65290,28 @@ var frameworkOptions = async (frameworkOptions2, options) => {
     symfony: symfonyOptions
   };
 };
-var webpack2 = async (config, options) => {
-  var _a, _b, _c;
+var webpack3 = async (config, options) => {
   const frameworkOptions2 = await options.presets.apply("frameworkOptions");
   return {
     ...config,
     plugins: [
       ...config.plugins || [],
-      webpack(frameworkOptions2.symfony)
+      webpack(frameworkOptions2.symfony),
+      webpack2(frameworkOptions2.symfony)
     ],
     module: {
       ...config.module,
       rules: [
-        ...config.module.rules || [],
         {
           test: /\.html\.twig$/,
-          loader: __require.resolve("html-loader")
-        }
+          loader: __require.resolve("./loaders/twig-loader")
+        },
+        ...config.module.rules || []
       ]
-    },
-    resolve: {
-      ...config.resolve,
-      extensions: [...((_a = config.resolve) == null ? void 0 : _a.extensions) || [], ".twig"],
-      alias: (_b = config.resolve) == null ? void 0 : _b.alias,
-      mainFields: ["twig", ...((_c = config.resolve) == null ? void 0 : _c.mainFields) || ["browser", "module", "main"]]
     }
   };
 };
-var experimental_indexers = (existingIndexers) => [twigIndexer].concat(existingIndexers || []);
+var experimental_indexers = (existingIndexers) => [twigCsfIndexer].concat(existingIndexers || []);
 var previewMainTemplate = async (path$1, options) => {
   const { symfony } = await options.presets.apply("frameworkOptions");
   const previewPath = path.join(symfony.runtimePath, "preview/preview.ejs");
@@ -65321,6 +65333,6 @@ exports.experimental_indexers = experimental_indexers;
 exports.frameworkOptions = frameworkOptions;
 exports.previewAnnotations = previewAnnotations;
 exports.previewMainTemplate = previewMainTemplate;
-exports.webpack = webpack2;
+exports.webpack = webpack3;
 //# sourceMappingURL=out.js.map
 //# sourceMappingURL=preset.js.map

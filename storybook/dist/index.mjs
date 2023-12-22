@@ -1,5 +1,5 @@
 // src/utils/twig.ts
-var TwigComponent = class {
+var TwigTemplate = class {
   constructor(source) {
     this.source = source;
     this.source = source;
@@ -12,12 +12,9 @@ var TwigComponent = class {
   }
 };
 function twig(source, ...values) {
-  return new TwigComponent(String.raw({ raw: source }, ...values));
+  return new TwigTemplate(String.raw({ raw: source }, ...values));
 }
 
-// src/index.ts
-var src_default = {};
-
-export { TwigComponent, src_default as default, twig };
+export { TwigTemplate, twig };
 //# sourceMappingURL=out.js.map
 //# sourceMappingURL=index.mjs.map

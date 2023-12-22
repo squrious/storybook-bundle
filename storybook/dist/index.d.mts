@@ -1,13 +1,13 @@
 import { StorybookConfig as StorybookConfig$2, Options, TypescriptOptions as TypescriptOptions$1 } from '@storybook/types';
 import { BuilderOptions, StorybookConfigWebpack, TypescriptOptions } from '@storybook/builder-webpack5';
 
-declare class TwigComponent {
+declare class TwigTemplate {
     private readonly source;
     constructor(source: string);
     getSource(): string;
     toString(): string;
 }
-declare function twig(source: TemplateStringsArray, ...values: any[]): TwigComponent;
+declare function twig(source: TemplateStringsArray, ...values: any[]): TwigTemplate;
 
 type RulesConfig = any;
 type ModuleConfig = {
@@ -41,9 +41,22 @@ type FrameworkName = '@storybook/symfony-webpack5';
 type BuilderName = '@storybook/builder-webpack5';
 type ProxyPaths = string[] | string;
 type SymfonyOptions = {
+    /**
+     * Symfony server URL.
+     */
     server: string;
+    /**
+     * Location of Storybook generated assets for Symfony renderer.
+     */
     runtimePath?: string;
+    /**
+     * Paths to proxy to the Symfony server. This is useful to resolve assets (i.e. with '/assets').
+     */
     proxyPaths?: ProxyPaths;
+    /**
+     * Whether to configure AssetMapper integration. This will enable hot reload when mapped assets changed.
+     */
+    useAssetMapper?: boolean;
 };
 type FrameworkOptions = {
     builder?: BuilderOptions;
@@ -67,6 +80,4 @@ type StorybookConfigFramework = {
  */
 type StorybookConfig = Omit<StorybookConfig$1, keyof StorybookConfigWebpack | keyof StorybookConfigFramework> & StorybookConfigWebpack & StorybookConfigFramework;
 
-declare const _default: {};
-
-export { type FrameworkOptions, type StorybookConfig, type SymfonyOptions, TwigComponent, _default as default, twig };
+export { type FrameworkOptions, type StorybookConfig, type SymfonyOptions, TwigTemplate, twig };

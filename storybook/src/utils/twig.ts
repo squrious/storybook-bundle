@@ -1,4 +1,4 @@
-export class TwigComponent {
+export class TwigTemplate {
     constructor(private readonly source: string) {
         this.source = source;
     }
@@ -12,7 +12,7 @@ export class TwigComponent {
     }
 }
 
-export function twig(source: TemplateStringsArray, ...values: any[]): TwigComponent
+export function twig(source: TemplateStringsArray, ...values: any[]): TwigTemplate
 {
-    return new TwigComponent(String.raw({ raw: source }, ...values));
+    return new TwigTemplate(String.raw({ raw: source }, ...values));
 }
